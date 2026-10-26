@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: unblock
+      POSTGRES_PASSWORD: unblock
+      POSTGRES_DB: unblock
+    ports:
+      # Host 5433 avoids clashing with a locally installed Postgres on 5432.
+      - "5433:5432"
+    volumes:
+      - unblock_pgdata:/var/lib/postgresql/data
+      # Only enables the vector extension on first container start.
+      # Table schema is managed by Alembic (`alembic upgrade head`), not this dir.
+      - ./storage/migrations:/docker-entrypoint-initdb.d
+
+volumes:
+  unblock_pgdata:
